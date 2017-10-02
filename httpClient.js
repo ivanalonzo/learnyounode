@@ -37,18 +37,14 @@ function performGet(validInput){
 /*
 This function actually does the handling of the response (res). The first thing is it sets the encoding
 the second thing is that it checks for an event. Events can be accessed through the "on" method
-You can see res.on("event", callback). The data event gives you a "chuck" stream.
-
-I am concatinating the chunk to a stream variable and at the event.end I actually console.out the
-completed stream and the length of it.
+You can see res.on("event", callback). The data event gives you a "chuck" stream that you can console.out
 
 There are two other events, error and end.
 */
 function printResponse(res){
-	var stream = "";
 	res.setEncoding("utf8");
 	res.on("data", function(chunk){
-		stream += chunk;
+		console.log(chunk);
 	});
 
 	res.on("error", function(){
@@ -56,24 +52,5 @@ function printResponse(res){
 	});
 
 	res.on("end", function(){
-		console.log(stream.length);
-		console.log(stream);
 	});
 }
-
-/*
-Official Solution
-var http = require('http')
-var bl = require('bl')
-
-http.get(process.argv[2], function (response) {
-	response.pipe(bl(function (err, data) {
-		if (err) {
-			return console.error(err)
-		}
-		data = data.toString()
-		console.log(data.length)
-		console.log(data)
-	}))
-})
-*/
