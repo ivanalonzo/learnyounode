@@ -4,7 +4,7 @@ var mymod = require("./mymodule.js");
 
 /*
 This uses module export approach. The logic is very similar to filteredLS
-the main difference is the logic residesin "mymodule.js". This is how Node exports
+the main difference is the logic resides in "mymodule.js". This is how Node exports
 libraries.
 
 Because mymodule just exports an anonymous function, you simply call it directly
