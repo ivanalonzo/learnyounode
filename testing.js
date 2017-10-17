@@ -1,22 +1,14 @@
-// Async task
-function async(arg, callback) {
-	console.log("do something with \""+arg+"\", return 1 sec later");
-	callback(arg * 2);
-}
-// Final task
-function final() { console.log("Done", results); }
+var t = new Date(Date.now());
+var month = 1 + t.getMonth();
+var formattedDate = t.getFullYear() + "-" + month + "-" + t.getDate() + " " + t.getHours() + ":" + t.getMinutes();
+//t = t.now();
 
-// A simple async series:
-var items = [ 1, 2, 3, 4, 5, 6 ];
-var results = [];
-function series(item) {
-	if(item) {
-		async( item, function(result) {
-			results.push(result);
-			return series(items.shift());
-		});
-	} else {
-		return final();
-	}
-}
-series(items.shift());
+console.log(t);
+console.log(formattedDate);
+// console.log(t.toDateString());
+//
+//
+// var d = new Date(1993, 6, 28, 14, 39, 7);
+//
+// console.log(d.toString());     // logs Wed Jul 28 1993 14:39:07 GMT-0600 (PDT)
+// console.log(d.toDateString()); // logs Wed Jul 28 1993
