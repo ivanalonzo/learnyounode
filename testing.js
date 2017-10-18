@@ -1,7 +1,7 @@
-for (var i = 1; i <= 25; i++){
-	var digit = i;
-	if (digit < 10){
-		digit = "0"+digit;
-	}
-	console.log("yqa_testuser" + digit);
+
+var query = "ivan=hi";
+console.log (query.split("="));
+var newQuery = query.split("=");
+for (var i = 0; i < newQuery.length; i++){
+	console.log (newQuery[i]);
 }

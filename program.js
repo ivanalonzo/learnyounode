@@ -1,57 +1,69 @@
 var http = require("http");
-var fs = require("fs");
+var url = require("url");
 var port = process.argv[2];
-var map = require("through2-map");
 var tempFileLoc = "/tmp/tempStorage.txt";
 
-/*
-I spent a lot of time on this (you can tell by looking at the code I commented out below)
-Mainly I got stuck in the idea that I first needed to read the data and create a body
-of the request. After that I would save it to a file, which I would use for storage of the
-req.stream. During storage I also did the uppercase conversion.
-
-Anyway, the solution was much simpler than that. Just pipe the input req stream and use
-the map function. Within the map function you do the uppercase conversion and finally
-pipe the results back to the res.stream
-*/
-var server = http.createServer(function(req, res){
-	var body = "";
-	if(req.method == "POST"){
-		req.pipe(map(function (chunk) {
-			return chunk.toString().toUpperCase();
-		})).pipe(res);
+function parseTime(arg, cb){
+	var t = new Date (arg);
+	var newTime = {
+		"hour" : t.getHours(),
+		"minute" : t.getMinutes(),
+		"second" : t.getSeconds()
 	};
+	cb(newTime);
+};
+
+function unixTime(arg, cb){
+	var t = new Date(arg);
+	var epoch = {
+		"unixtime" : t.getTime()
+	};
+	cb (epoch);
+}
+
+var server = http.createServer(function(req, res){
+	var myURL = url.parse(req.url);
+	var sQuery = myURL.query.split("=");
+
+	if (sQuery[0] == "iso"){
+		if (myURL.pathname == "/api/parsetime"){
+			res.writeHead(200, { "content-type": "application/json" });
+			parseTime(sQuery[1], function (result){
+				console.log(result);
+				res.end(JSON.stringify(result));
+			});
+		}
+		if (myURL.pathname == "/api/unixtime"){
+			res.writeHead(200, { "content-type": "application/json" });
+			unixTime(sQuery[1], function (result){
+				console.log(result);
+				res.end(JSON.stringify(result));
+			});
+		}
+	}else{
+		res.writeHead(400, { "content-type": "application/json" });
+		console.log("iso was not in the query: " + sQuery[0]);
+		res.end();
+	}
+
+
+
+
+
+	// console.log(myURL.pathname);
+	// console.log(myURL.query);
+
+
+	//
+	// unixTime(Date.now(), function (result){
+	// 	console.log(result);
+	// 	res.end(JSON.stringify(result));
+	// });
+
+
+
 });
 
 //Just starts the listening on the port set by the input.
 server.listen(port);
 console.log("Started webserver. Listening on: " + port);
-
-// var server = http.createServer(function(req, res){
-// 	var body = "";
-// 	if(req.method == "POST"){
-// 		var tempStorage = fs.createWriteStream(tempFileLoc);
-//
-// 		req.on("data", function (data){
-// 			body += data;
-// 		});
-//
-// 		req.on("end", function (){
-// 			tempStorage.write(body.toUpperCase());
-// 		});
-//
-// 		res.writeHead(200, {"Content-Type": "text/html"});
-// 		var readStream = fs.createReadStream(tempFileLoc);
-// 		readStream.on("open", function(){
-// 			readStream.pipe(res);
-// 		});
-//
-// 		readStream.on("error", function(err){
-// 			res.end(err);
-// 		});
-// 	};
-// });
-//
-// //Just starts the listening on the port set by the input.
-// server.listen(port);
-// console.log("Started webserver. Listening on: " + port);
